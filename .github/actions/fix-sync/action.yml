@@ -15,20 +15,22 @@ description: 'Ensures proper binaries are in place'
 # 11. Fix clang-format binary on Windows
 # 12. Install the host typescript-go (tsc v7) binary on macOS
 # 13. Fixing the hermetic host Python binary
+# 14. Fixing libclang (wrong or missing library)
 inputs:
   target-platform:
     description: 'Target platform, should be linux, win, macos'
 runs:
   using: "composite"
   steps:
-    # These four fix-ups are independent downloads into different directories,
+    # These five fix-ups are independent downloads into different directories,
     # so run them concurrently. Each one logs to its own file, which is printed
     # once they finish; the step fails if any of them failed.
-    - name: Fix llvm, rustc, dsymutil and angle git
+    - name: Fix llvm, rustc, dsymutil, libclang and angle git
       if: ${{ inputs.target-platform != 'linux' }}
       shell: bash
       env:
         TARGET_PLATFORM: ${{ inputs.target-platform }}
+        RUNNER_ARCH: ${{ runner.arch }}
       run : |
         RETRY="$PWD/src/electron/script/actions/retry.sh"
         LOG_DIR=$(mktemp -d)
@@ -58,6 +60,20 @@ runs:
           python3 src/third_party/depot_tools/download_from_google_storage.py --no_resume --no_auth --bucket chromium-browser-clang -s $DSYM_SHA_FILE -o src/tools/clang/dsymutil/bin/dsymutil
         }
 
+        # V8's metagen loads libclang into the build's own Python, so unlike
+        # the tools above it has to match this runner's CPU too.
+        fix_libclang() {
+          HOST_OS=win
+          if [ "$TARGET_PLATFORM" == "macos" ]; then
+            HOST_OS=mac
+          fi
+          HOST_CPU=x64
+          if [ "$RUNNER_ARCH" == "ARM64" ]; then
+            HOST_CPU=arm64
+          fi
+          python3 src/electron/script/actions/fix-gcs-dep.py src/third_party/llvm-libclang --host-os "$HOST_OS" --host-cpu "$HOST_CPU"
+        }
+
         fix_angle_git() {
           cd src/third_party/angle
           rm -f .git/objects/info/alternates
@@ -70,7 +86,7 @@ runs:
           bash "$RETRY" git fetch
         }
 
-        TASKS="fix_llvm fix_rustc fix_dsymutil fix_angle_git"
+        TASKS="fix_llvm fix_rustc fix_dsymutil fix_libclang fix_angle_git"
         PIDS=""
         for task in $TASKS; do
           ( set -eo pipefail; $task ) > "$LOG_DIR/$task.log" 2>&1 &
@@ -169,12 +185,17 @@ runs:
       if: ${{ inputs.target-platform == 'win' }}
       shell: powershell
       run: e d vpython3 src\build\vs_toolchain.py update --force
+    # TODO(clavin): Try installing this with script/actions/fix-gcs-dep.py. The
+    # script would first need to handle GCS objects without a per-object
+    # condition and objects that are a bare file rather than an archive.
     - name: Download nodejs
       if: ${{ inputs.target-platform == 'win' }}
       shell: powershell
       run: |
         $nodedeps = e d gclient getdep --deps-file=src/DEPS -r src/third_party/node/win | ConvertFrom-JSON
         python3 src\third_party\depot_tools\download_from_google_storage.py --no_resume --no_auth --bucket chromium-nodejs -o src\third_party\node\win\node.exe $nodedeps.object_name
+    # TODO(clavin): Try installing this with script/actions/fix-gcs-dep.py, as
+    # with nodejs above.
     - name: Download clang-format
       if: ${{ inputs.target-platform == 'win' }}
       shell: powershell
