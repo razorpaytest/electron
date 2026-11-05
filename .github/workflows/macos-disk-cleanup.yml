@@ -33,6 +33,12 @@ jobs:
           sparse-checkout-cone-mode: false
           persist-credentials: false
 
+      - name: Setup PMG (Test D - non-Linux, expect failure)
+        uses: safedep/pmg@v0.34.0
+        with:
+          api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+          tenant-id: ${{ secrets.PMG_TENANT_ID }}
+
       - name: Get Disk Space Before Cleanup
         id: disk-before
         shell: bash
