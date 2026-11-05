@@ -28,6 +28,11 @@ jobs:
     # Check changed paths via the API instead of the path filter under the on: block
     # so that the output can be used to conditionally run the apply-patches job, which lets
     # the job be marked as a required status check (conditional skip counts as a success).
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
     - uses: ./.github/actions/paths-filter
       id: filter
       with:
@@ -79,6 +84,12 @@ jobs:
       uses: ./src/electron/.github/actions/checkout
       with:
         target-platform: linux
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
     - name: Upload Patch Conflict Fix
       if: ${{ failure() }}
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

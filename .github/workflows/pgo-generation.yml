@@ -52,6 +52,11 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       with:
         persist-credentials: false
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
     - name: Get Build Image SHA
       id: set-output
       uses: ./.github/actions/build-image-sha
@@ -86,6 +91,12 @@ jobs:
     - name: Checkout & Sync & Save
       uses: ./src/electron/.github/actions/checkout
 
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
   checkout-macos:
     needs: setup
     if: ${{ !inputs.skip-macos }}
@@ -116,6 +127,12 @@ jobs:
         generate-sas-token: 'true'
         target-platform: macos
 
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
   checkout-windows:
     needs: setup
     if: ${{ !inputs.skip-windows }}
@@ -147,6 +164,12 @@ jobs:
         generate-sas-token: 'true'
         target-platform: win
 
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
   # All builds need the patched siso binary (same as build.yml). Each host is a
   # separate job so a cache miss or re-run for one host only blocks that host's
   # builds; they produce the windows-amd64, linux-amd64 and darwin-arm64
@@ -413,6 +436,12 @@ jobs:
         path: src/electron
         fetch-depth: 0
         persist-credentials: false
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
     - name: Run Electron Only Hooks
       run: |
         e d gclient runhooks --spec="solutions=[{'name':'src/electron','url':None,'deps_file':'DEPS','custom_vars':{'process_deps':False},'managed':False}]"
@@ -587,6 +616,12 @@ jobs:
         path: src/electron
         fetch-depth: 0
         persist-credentials: false
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
     - name: Download llvm-profdata
       run: |
         # --output-dir is required: the default location replaces the clang install.
@@ -657,6 +692,11 @@ jobs:
       contents: write
       id-token: write
     steps:
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
     - name: Download Merged Profiles
       uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
       with:
@@ -780,6 +820,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     steps:
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
     - name: Check job statuses
       env:
         NEEDS_CONTEXT: ${{ toJSON(needs) }}

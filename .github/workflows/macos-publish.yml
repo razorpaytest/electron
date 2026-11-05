@@ -32,6 +32,11 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       with:
         persist-credentials: false
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
     - name: Set Build Image SHA
       id: build-image-sha
       uses: ./.github/actions/build-image-sha
@@ -65,6 +70,12 @@ jobs:
         generate-sas-token: 'true'
         target-platform: macos
 
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
   # Build the patched siso binary in parallel with checkout-macos; the
   # publish jobs consume the darwin-arm64 artifact via SISO_PATH (macOS builds,
   # x64 and arm64, run on arm64 hosts).

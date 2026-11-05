@@ -18,6 +18,11 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: Setup PMG
+        uses: safedep/pmg@v0.34.0
+        with:
+          api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+          tenant-id: ${{ secrets.PMG_TENANT_ID }}
       - name: Check signed commits in PR
         uses: 1Password/check-signed-commits-action@ed2885f3ed2577a4f5d3c3fe895432a557d23d52 # v1
         with:

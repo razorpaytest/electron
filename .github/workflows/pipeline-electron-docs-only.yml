@@ -50,6 +50,12 @@ jobs:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.sha }}
         persist-credentials: false
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
     - name: Install Dependencies
       uses: ./src/electron/.github/actions/install-dependencies
     - name: Run TS/JS compile

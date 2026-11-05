@@ -68,6 +68,11 @@ jobs:
     # exclusions must live inside a single negated brace pattern - a second
     # negated pattern would match (and re-include) every file the first one
     # excluded.
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
     - uses: ./.github/actions/paths-filter
       id: filter
       with:
@@ -185,6 +190,12 @@ jobs:
         generate-sas-token: 'true'
         target-platform: macos
 
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
   # No plain src gate here: the docs-only compile needs this checkout even
   # when src is false. pgo-only changes have no consumer for it, so they
   # skip it via the docs-only output instead.
@@ -220,6 +231,12 @@ jobs:
       with:
         target-platform: linux
 
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
   checkout-windows:
     needs: setup
     if: ${{ needs.setup.outputs.src == 'true' && !inputs.skip-windows }}
@@ -254,6 +271,12 @@ jobs:
         generate-sas-token: 'true'
         target-platform: win
 
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
   # Build the patched siso binary for each CI build host (windows-amd64,
   # linux-amd64, darwin-arm64) in parallel with the checkout jobs. Each host is
   # a separate job so a cache miss or re-run for one host only blocks that
@@ -610,6 +633,11 @@ jobs:
     needs: [docs-only, checkout-macos, checkout-linux, checkout-windows, macos-x64, macos-arm64, linux-x64, linux-x64-asan, linux-x64-ubsan, linux-arm64, build-siso-macos, build-siso-linux, build-siso-windows, windows-x64, windows-arm64]
     if: always() && github.repository == 'electron/electron'
     steps:
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
     - name: Fail if any needed job failed or was cancelled
       if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
       run: exit 1

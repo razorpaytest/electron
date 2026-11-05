@@ -21,6 +21,11 @@ jobs:
       repository-projects: write  # Required for labels
     runs-on: ubuntu-latest
     steps:
+      - name: Setup PMG
+        uses: safedep/pmg@v0.34.0
+        with:
+          api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+          tenant-id: ${{ secrets.PMG_TENANT_ID }}
       - name: Determine Major Version
         id: check-major-version
         env:

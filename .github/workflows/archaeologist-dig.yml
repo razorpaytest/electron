@@ -17,6 +17,11 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Setup PMG
+        uses: safedep/pmg@v0.34.0
+        with:
+          api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+          tenant-id: ${{ secrets.PMG_TENANT_ID }}
       - name: Setup Node.js/npm
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:

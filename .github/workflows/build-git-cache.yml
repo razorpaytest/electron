@@ -20,6 +20,11 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       with:
         persist-credentials: false
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
     - name: Set Build Image SHA
       id: build-image-sha
       uses: ./.github/actions/build-image-sha
@@ -44,6 +49,12 @@ jobs:
         path: src/electron
         fetch-depth: 0
         persist-credentials: false
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
     - name: Build Git Cache
       uses: ./src/electron/.github/actions/build-git-cache
       with:
@@ -70,6 +81,12 @@ jobs:
         path: src/electron
         fetch-depth: 0
         persist-credentials: false
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
     - name: Build Git Cache
       uses: ./src/electron/.github/actions/build-git-cache
       with:
@@ -96,6 +113,12 @@ jobs:
         path: src/electron
         fetch-depth: 0
         persist-credentials: false
+    - name: Setup PMG
+      uses: safedep/pmg@v0.34.0
+      with:
+        api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+        tenant-id: ${{ secrets.PMG_TENANT_ID }}
+        expose-to-job-network: true
     - name: Build Git Cache
       uses: ./src/electron/.github/actions/build-git-cache
       with:

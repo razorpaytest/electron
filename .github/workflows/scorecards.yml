@@ -28,6 +28,11 @@ jobs:
           persist-credentials: false
 
       # This is a pre-submit / pre-release.
+      - name: Setup PMG
+        uses: safedep/pmg@v0.34.0
+        with:
+          api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+          tenant-id: ${{ secrets.PMG_TENANT_ID }}
       - name: "Run analysis"
         uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
         with:

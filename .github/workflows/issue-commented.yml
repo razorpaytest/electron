@@ -13,6 +13,11 @@ jobs:
     if: ${{ !github.event.issue.pull_request && (contains(github.event.issue.labels.*.name, 'blocked/need-repro') || contains(github.event.issue.labels.*.name, 'blocked/need-info ❌')) && github.event.comment.user.type != 'Bot' }}
     runs-on: ubuntu-slim
     steps:
+      - name: Setup PMG
+        uses: safedep/pmg@v0.34.0
+        with:
+          api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+          tenant-id: ${{ secrets.PMG_TENANT_ID }}
       - name: Get author association
         id: get-author-association
         env:
@@ -39,6 +44,11 @@ jobs:
     if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/request-review') && github.event.comment.user.type != 'Bot' }}
     runs-on: ubuntu-slim
     steps:
+      - name: Setup PMG
+        uses: safedep/pmg@v0.34.0
+        with:
+          api-key: ${{ secrets.PMG_PUBLIC_REPOS_TOKEN }}
+          tenant-id: ${{ secrets.PMG_TENANT_ID }}
       - name: Get author association
         id: get-author-association
         env:
